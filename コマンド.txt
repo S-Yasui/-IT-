@@ -1,0 +1,5 @@
+◆uiファイルをpyファイルに変換
+pyuic5 -o Sample.py Sample.ui
+
+◆exe化
+pyinstaller MyForm.py --onefile --clean --windowed --icon=mainIcon.ico
