@@ -44,7 +44,7 @@ class MyFaceApi:
             return faceIds
 
         except Exception as e:
-            user32.MessageBoxW(0, sys.exc_info()[1], u'ERROR', 0x00000010)
+            user32.MessageBoxW(0, '{0}:{1}'.format('DetectFaces',e.args[0]), u'ERROR', 0x00000010)
             return None
 
 
@@ -66,7 +66,7 @@ class MyFaceApi:
             return CF.face.identify(faceIds, person_group_id=groupId)
 
         except Exception as e:
-            user32.MessageBoxW(0, e.args[0], u'ERROR', 0x00000010)
+            user32.MessageBoxW(0, '{0}:{1}'.format('IdentifyFaces',e.args[0]), u'ERROR', 0x00000010)
             return None
 
 
@@ -102,7 +102,7 @@ class MyFaceApi:
             return personList
 
         except Exception as e:
-            user32.MessageBoxW(0, e.args[0], u'ERROR', 0x00000010)
+            user32.MessageBoxW(0, '{0}:{1}'.format('GetPerson',e.args[0]), u'ERROR', 0x00000010)
             return None
 
 
@@ -126,6 +126,7 @@ class MyFaceApi:
 
             # 顔検知
             faceIds = MyFaceApi.DetectFaces(image_file_path)
+            print(faceIds)
 
             # 顔検知エラー
             if faceIds == None:
@@ -136,6 +137,7 @@ class MyFaceApi:
 
             # 顔識別
             identify_result = MyFaceApi.IdentifyFaces(faceIds)
+            print(identify_result)
 
             #　顔認識エラー
             if identify_result == None:
@@ -143,10 +145,11 @@ class MyFaceApi:
 
             # 人物取得
             retList = MyFaceApi.GetPerson(identify_result)
+            print(retList)
             return retList
 
         except Exception as e:
-            user32.MessageBoxW(0, e.args[0], u'ERROR', 0x00000010)
+            user32.MessageBoxW(0, '{0}:{1}'.format('getPersonInfo',e.args[0]), u'ERROR', 0x00000010)
             return None
 
 
