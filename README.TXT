@@ -4,12 +4,15 @@ FaceAPIを利用したサンプルプログラムです。
 ◆環境
 Python 3.x（おそらく最新版で動くはずです）
 以下のライブラリをインストールする必要があります。いずれもpipでインストールできるはずです。
-ライブラリ           コマンド
+ライブラリ             コマンド
 -------------------------------------------------------------------
-cognitive_face      pip install cognitive_face
-OpenCV              pip install opencv-python
-numpy               pip install numpy
-pyaudio             python -m pip install pyaudio
+cognitive_face        pip install cognitive_face
+OpenCV                pip install opencv-python
+numpy                 pip install numpy
+pyaudio               python -m pip install pyaudio
+azure                 pip install azure
+azure-cosmosdb-table  pip install azure-cosmosdb-table
+
 
 
 ◆主に使用するファイル
