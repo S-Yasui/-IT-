@@ -2,8 +2,7 @@
 import sys
 from PyQt5 import QtCore as Qc, QtGui as Qg, QtWidgets as Qw    #（補足1）
 from PyQt5.QtWidgets import QFileDialog
-import os.path
-
+import os
 from ctypes import *
 user32 = windll.user32 #デバッグ用
 
@@ -172,13 +171,15 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def _on_destroyed():
 
-        # 更新情報を初期化
+        # DB情報を初期化
         userId = ''
         userName = ''
         statusCd = ''
-
-        # DB情報を更新
         MyCosmosDB.updateDeskStatus(const.DESK_ID, const.FLOOR_ID, userId, userName, statusCd)
+
+        # 一時保存写真を削除
+        if os.path.exists('image\image.png'):
+            os.remove('image\image.png')
 
 
 if __name__ == '__main__':
