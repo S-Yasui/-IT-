@@ -12,22 +12,22 @@ class PersonalIcon(Qw.QWidget):
     #----------------------------------------------
     # （内部処理）初期化処理
     #----------------------------------------------
-    def __init__(self, parent, image=None, text=None):  #クラスの初期化
+    def __init__(self, parent, imgSize, image=None, text=None):  #クラスの初期化
 
         super().__init__(parent)            #上位クラスの初期化ルーチンを呼び出す（補足2）
         self.ui = myicon.Ui_Form()
         self.ui.setupUi(self)
 
         pixmap = QPixmap(image)
-        self.ui.imgField.setPixmap(pixmap.scaled(30, 30, aspectRatioMode=Qt.KeepAspectRatio))
+        self.ui.imgField.setPixmap(pixmap.scaled(imgSize, imgSize, aspectRatioMode=Qt.KeepAspectRatio))
         self.ui.textField.setText(text)
 
     #----------------------------------------------
     # （内部処理）画像設定
     #----------------------------------------------
-    def setImage(self, image):
+    def setImage(self, image, imgSize):
          pixmap = QPixmap(image)
-         self.ui.imgField.setPixmap(pixmap.scaled(30, 30, aspectRatioMode=Qt.KeepAspectRatio))
+         self.ui.imgField.setPixmap(pixmap.scaled(imgSize, imgSize, aspectRatioMode=Qt.KeepAspectRatio))
 
     #----------------------------------------------
     # （内部処理）テキスト設定

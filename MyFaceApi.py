@@ -11,6 +11,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 import json
+import const
+const.API_KEY = '0d376b5d65c1439eab3e06154da07cc8'
+const.BASE_URL = 'https://japaneast.api.cognitive.microsoft.com/face/v1.0/'  # Replace with your regional Base URL
 
 import cv2
 import sys
@@ -19,8 +22,6 @@ from ctypes import *
 user32 = windll.user32
 
 class MyFaceApi:
-    def __init__(self):
-        pass
 
     #----------------------------------------------
     # （内部処理）顔検知
@@ -28,12 +29,9 @@ class MyFaceApi:
     def DetectFaces(image_file_path):
         try:
 
-            # APIキーのセット
-            api_key = '0d376b5d65c1439eab3e06154da07cc8'
-            CF.Key.set(api_key)
-
-            BASE_URL = 'https://japaneast.api.cognitive.microsoft.com/face/v1.0/'  # Replace with your regional Base URL
-            CF.BaseUrl.set(BASE_URL)
+            # APIキー，接続リージョンのセット
+            CF.Key.set(const.API_KEY)
+            CF.BaseUrl.set(const.BASE_URL)
 
             # リクエスト送信
             result = CF.face.detect(image_file_path)
@@ -54,12 +52,9 @@ class MyFaceApi:
     def IdentifyFaces(faceIds):
         try:
 
-            # APIキーのセット
-            api_key = '0d376b5d65c1439eab3e06154da07cc8'
-            CF.Key.set(api_key)
-
-            BASE_URL = 'https://japaneast.api.cognitive.microsoft.com/face/v1.0/'  # Replace with your regional Base URL
-            CF.BaseUrl.set(BASE_URL)
+            # APIキー，接続リージョンのセット
+            CF.Key.set(const.API_KEY)
+            CF.BaseUrl.set(const.BASE_URL)
 
             # 顔認識結果を返却
             groupId = 'test_group'
@@ -76,12 +71,9 @@ class MyFaceApi:
     def GetPerson(identify_result):
         try:
 
-            # APIキーのセット
-            api_key = '0d376b5d65c1439eab3e06154da07cc8'
-            CF.Key.set(api_key)
-
-            BASE_URL = 'https://japaneast.api.cognitive.microsoft.com/face/v1.0/'  # Replace with your regional Base URL
-            CF.BaseUrl.set(BASE_URL)
+            # APIキー，接続リージョンのセット
+            CF.Key.set(const.API_KEY)
+            CF.BaseUrl.set(const.BASE_URL)
 
             # 人物を取得
             personList = []
@@ -122,11 +114,9 @@ class MyFaceApi:
                 return None
 
             image_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'image',image_file_name)
-            #image_file_path = 'C:/Users/user/Desktop/2社合同IT研究会/IT研究会資料/sonota_sample/img/image01.png'
 
             # 顔検知
             faceIds = MyFaceApi.DetectFaces(image_file_path)
-            print(faceIds)
 
             # 顔検知エラー
             if faceIds == None:
@@ -137,7 +127,6 @@ class MyFaceApi:
 
             # 顔識別
             identify_result = MyFaceApi.IdentifyFaces(faceIds)
-            print(identify_result)
 
             #　顔認識エラー
             if identify_result == None:
@@ -145,7 +134,6 @@ class MyFaceApi:
 
             # 人物取得
             retList = MyFaceApi.GetPerson(identify_result)
-            print(retList)
             return retList
 
         except Exception as e:

@@ -2,7 +2,6 @@
 import sys
 from PyQt5 import QtCore as Qc, QtGui as Qg, QtWidgets as Qw    #（補足1）
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtCore import Qt
 import os.path
 
 from ctypes import *
@@ -10,17 +9,23 @@ user32 = windll.user32 #デバッグ用
 
 from PyQt5.QtWidgets import QApplication, QLabel
 from PyQt5.QtGui import QIcon, QPixmap, QImage
+from PyQt5 import QtCore
 from PersonalIcon import PersonalIcon
 from MyFaceApi import *
+from MyCosmosDB import *
 import json
+import io
+import configparser
 
 import Sample as Sample               #デザイナーで作った画面をインポートする
+
 
 class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindowのサブクラス作成
 
     #グローバル変数
-    gCurrentDir = ''            # カレントディレクトリ
-    gImgIconList = {}           # アイコンリスト
+    gDeskStatusList = {}        # 座席状態リスト
+    gDeskId = ''                # デスクID
+    gFloorId = ''               # フロアID
 
     #----------------------------------------------
     # （内部処理）初期化処理
@@ -31,26 +36,57 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
         self.ui = Sample.Ui_MainWindow()     #先ほど作ったhello.pyの中にあるクラスの
         self.ui.setupUi(self)               #このコマンドを実行する
 
+        # 終了処理用
+        self.setAttribute(Qc.Qt.WA_DeleteOnClose, True)
+        self.destroyed.connect(MyForm._on_destroyed)
+
+        # ウィンドウタイトル
         self.setWindowTitle('Sample')
 
-        #背景設定（背景もDBから情報を取得できれば一番良い
-        pixmap = QPixmap('desk.jpg')
-        self.ui.img_main.setPixmap(pixmap)
-        self.resize(pixmap.width()+100, pixmap.height()+100)
-        self.setFixedSize(pixmap.width()+100, pixmap.height()+100)
+        #背景設定（背景もDBから情報を取得できれば一番良い）
+        pixmap = QPixmap('desk_office.jpg')
+        self.ui.img_main.setPixmap(pixmap.scaled(self.ui.img_main.width(),self.ui.img_main.height(),Qc.Qt.KeepAspectRatio))
+        pixmap = QPixmap('desk_satellite.jpg')
+        self.ui.img_satellite.setPixmap(pixmap.scaled(self.ui.img_satellite.width(),self.ui.img_satellite.height(),Qc.Qt.KeepAspectRatio))
+        pixmap = QPixmap('desk_telework.jpg')
+        self.ui.img_telework.setPixmap(pixmap.scaled(self.ui.img_telework.width(),self.ui.img_telework.height(),Qc.Qt.KeepAspectRatio))
+
+        self.setFixedSize(1200, 900)
 
         #グローバル変数初期化
-        global gCurrentDir
-        gCurrentDir = ''
-        global gImgIconList
-        gImgIconList = {}
+        global gDeskStatusList
+        gDeskStatusList = {}
+        global gDeskId
+        gDeskId = ''
+        global gFloorId
+        gFloorId = ''
 
-        gImgIconList = self.getList()
+        # 設定ファイル読込
+        self.getSettings()
+
+        self.getList()
+
+
+    #----------------------------------------------
+    # （内部処理）設定ファイル読込処理
+    #----------------------------------------------
+    def getSettings(self):
+
+        inifile = configparser.ConfigParser()
+        with io.open('./config.ini', 'r', encoding='utf_8_sig') as fp:
+            inifile.readfp(fp)
+
+        global gDeskId
+        global gFloorId
+
+        gDeskId = inifile.get('settings', 'deskId')
+        gFloorId = inifile.get('settings', 'floorId')
+
 
     #----------------------------------------------
     # （イベント）更新ボタン
     #----------------------------------------------
-    def openFile(self):
+    def updateScr(self):
 
         # アイコン更新処理呼び出し
         self.updateIcon()
@@ -60,34 +96,41 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def updateIcon(self):
 
-        global gImgIconList
+        global gDeskStatusList
+        global gDeskId
+        global gFloorId
 
         # 人物情報を取得
         result = MyFaceApi.getPersonInfo()
 
-        #これ以降はあとで取得した情報によってDB情報を更新する処理に変える
+        # 更新情報を初期化
+        deskId = gDeskId        # 設定ファイルの値
+        floorId = gFloorId      # 設定ファイルの値
+        userId = ''
+        userName = ''
+        statusCd = ''
 
-        for zasekiId, img_icon_info in gImgIconList.items():
-            if zasekiId == '0000005':
-                #とりあえず顔検出できたら5卓のアイコンを変えてみる
-                if result == None:
-                    #検知エラー
-                    img_icon_info['icon'].setImage(None)
-                    img_icon_info['icon'].setText(None)
-                elif len(result) > 0:
-                    personInfo = result[0]
-                    img_icon_info['icon'].setImage('icon\icon_image_01.png')
-                    img_icon_info['icon'].setText(personInfo['userName'])
-                    img_icon_info['user_id'] = personInfo['userId']
-                    img_icon_info['user_name'] = personInfo['userName']
-                else:
-                    img_icon_info['icon'].setImage('icon\icon_image_04.png')
-                    #img_icon_info['icon'].setText(None)
+        if result == None:
+            pass
+        elif len(result)==0:
+            # 席に誰もいない
+            deskInfo = gDeskStatusList[deskId]
+            userId = deskInfo['user_id']
+            userName = deskInfo['user_name']
+            if len(userId)>0:
+                statusCd = '4'
+        else:
+            #　誰か座っている
+            personInfo = result[0]
+            userId = personInfo['userId']
+            userName = personInfo['userName']
+            statusCd = '1'
 
-            else:
-               pass
+        # DB情報を更新
+        MyCosmosDB.updateDeskStatus(deskId, floorId, userId, userName, statusCd)
 
-        print(gImgIconList)
+        # 表示情報を更新
+        self.getList()
 
 
     #----------------------------------------------
@@ -95,36 +138,60 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def getList(self):
 
-        # あとでDB情報を取得してリスト化する処理に変える
+        global gFloorId
 
-        #とりあえず適当に8人分くらいべた書き
-        retList = {}
+        deskStatusTable = MyCosmosDB.getDeskStatusTable(gFloorId)
+        statusIconList = {'1':'icon\icon_image_01.png', '2':'icon\icon_image_02.png', '3':'icon\icon_image_03.png', '4':'icon\icon_image_04.png'}
 
-        for num in range(1, 9):
-            zasekiId = format(num, '07x')
-            if num <= 4:
-                x = 170
-                y = 90 + (90 * num)
+        global gDeskStatusList
+        updateFlg = False
+        if len(gDeskStatusList)>0:
+            updateFlg = True
+
+        for desk in deskStatusTable:
+
+            user_id = None
+            user_name = None
+            img_path = None
+
+            if len(desk['userId']) > 0:
+                user_id = desk['userId']
+
+            if len(desk['userName']) > 0:
+                user_name = desk['userName']
+
+            if len(desk['statusCd']) > 0:
+                img_path = statusIconList[desk['statusCd']]
+
+            if updateFlg:
+                # 座席状態リスト作成済の場合
+                deskInfo = gDeskStatusList[desk['RowKey']]
+                deskInfo['icon'].setImage(img_path, 20)
+                deskInfo['icon'].setText(user_name)
+                deskInfo['user_id'] = user_id
+                deskInfo['user_name'] = user_name
             else:
-                x = 260
-                y = 90 + (90 * (num - 4))
+                #　座席状態リスト未作成の場合
+                img_icon = PersonalIcon(self.ui.img_main, 20, img_path, user_name)
+                img_icon.setGeometry(desk['x'], desk['y'], img_icon.width(), img_icon.height())
+                gDeskStatusList.update({desk['RowKey']:{'user_id':user_id, 'user_name':user_name, 'icon':img_icon, 'x':desk['x'], 'y':desk['y']}})
 
-            if num % 2 == 0:
-                image_path = 'icon\icon_image_01.png'
-                icon_text = 'ユーザ{0}'.format(num)
-                user_id = 'S{0}'.format(format(num, '04x'))
-            else:
-                # 奇数ユーザはいない設定にしておく
-                image_path = None
-                icon_text = None
-                user_id = None
 
-            img_icon = PersonalIcon(self, image_path, icon_text)
-            img_icon.setGeometry(x, y, img_icon.width(), img_icon.height())
-            retList.update({zasekiId:{'user_id':user_id, 'user_name':icon_text, 'icon':img_icon, 'x':x, 'y':y}})
+    #----------------------------------------------
+    # （内部処理）終了処理
+    #----------------------------------------------
+    def _on_destroyed():
 
-        return retList
+        global gDeskId
+        global gFloorId
 
+        # 更新情報を初期化
+        userId = ''
+        userName = ''
+        statusCd = ''
+
+        # DB情報を更新
+        MyCosmosDB.updateDeskStatus(gDeskId, gFloorId, userId, userName, statusCd)
 
 
 if __name__ == '__main__':
