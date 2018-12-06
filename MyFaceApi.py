@@ -17,7 +17,7 @@ const.BASE_URL = 'https://japaneast.api.cognitive.microsoft.com/face/v1.0/'  # R
 
 import cv2
 import sys
-import os.path
+import os
 from ctypes import *
 user32 = windll.user32
 
@@ -176,6 +176,11 @@ class MyFaceApi:
 
             # 画像を保存して処理を抜ける
             picFileName = 'image.png'
+
+            # フォルダが存在しない場合作成する
+            if not os.path.exists('image'):
+                os.mkdir('image')
+
             cv2.imwrite('image/' + picFileName, image)
             break
 
