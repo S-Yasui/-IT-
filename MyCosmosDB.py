@@ -10,6 +10,8 @@ from azure.cosmosdb.table.models import Entity
 from azure.cosmosdb.table.tablebatch import TableBatch
 from ctypes import *
 user32 = windll.user32
+import const
+const.CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=dbforfaceapitest;AccountKey=fNpt9FKY2FjKa0q1ANN7KT9Gn/s2c8NY1gB8jenN9jqide2eWdz+zw8rX6RlU+DmSLW4tVvLpvyUUnPFhaH6PQ==;EndpointSuffix=core.windows.net'
 
 class MyCosmosDB:
     def __init__(self):
@@ -22,7 +24,7 @@ class MyCosmosDB:
         try:
 
             # Azure Cosmos DB への接続（接続文字列を設定）
-            table_service = TableService(connection_string='DefaultEndpointsProtocol=https;AccountName=dbforfaceapitest;AccountKey=fNpt9FKY2FjKa0q1ANN7KT9Gn/s2c8NY1gB8jenN9jqide2eWdz+zw8rX6RlU+DmSLW4tVvLpvyUUnPFhaH6PQ==;EndpointSuffix=core.windows.net')
+            table_service = TableService(connection_string=const.CONNECTION_STRING)
 
             # エンティティを照会する
             desks = table_service.query_entities('deskStatusTable', filter="PartitionKey eq 'deskId'")
@@ -46,7 +48,7 @@ class MyCosmosDB:
         try:
 
             # Azure Cosmos DB への接続（接続文字列を設定）
-            table_service = TableService(connection_string='DefaultEndpointsProtocol=https;AccountName=dbforfaceapitest;AccountKey=fNpt9FKY2FjKa0q1ANN7KT9Gn/s2c8NY1gB8jenN9jqide2eWdz+zw8rX6RlU+DmSLW4tVvLpvyUUnPFhaH6PQ==;EndpointSuffix=core.windows.net')
+            table_service = TableService(connection_string=const.CONNECTION_STRING)
 
             # エンティティを更新する
             entity = Entity()
@@ -59,5 +61,5 @@ class MyCosmosDB:
             table_service.merge_entity('deskStatusTable', entity, if_match='*')
 
         except Exception as e:
-            user32.MessageBoxW(0, '{0}:{1}'.format('getDeskStatusTable',e.args[0]), u'ERROR', 0x00000010)
+            user32.MessageBoxW(0, '{0}:{1}'.format('updateDeskStatus',e.args[0]), u'ERROR', 0x00000010)
             return None
