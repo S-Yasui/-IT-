@@ -16,16 +16,15 @@ from MyCosmosDB import *
 import json
 import io
 import configparser
+import const
 
 import Sample as Sample               #デザイナーで作った画面をインポートする
 
 
 class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindowのサブクラス作成
 
-    #グローバル変数
+    # クラス変数
     gDeskStatusList = {}        # 座席状態リスト
-    gDeskId = ''                # デスクID
-    gFloorId = ''               # フロアID
 
     #----------------------------------------------
     # （内部処理）初期化処理
@@ -43,7 +42,7 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
         # ウィンドウタイトル
         self.setWindowTitle('Sample')
 
-        #背景設定（背景もDBから情報を取得できれば一番良い）
+        # 背景設定（背景もDBから情報を取得できれば一番良い）
         pixmap = QPixmap('desk_office.jpg')
         self.ui.img_main.setPixmap(pixmap.scaled(self.ui.img_main.width(),self.ui.img_main.height(),Qc.Qt.KeepAspectRatio))
         pixmap = QPixmap('desk_satellite.jpg')
@@ -53,17 +52,14 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
 
         self.setFixedSize(1200, 900)
 
-        #グローバル変数初期化
+        # クラス変数初期化
         global gDeskStatusList
         gDeskStatusList = {}
-        global gDeskId
-        gDeskId = ''
-        global gFloorId
-        gFloorId = ''
 
         # 設定ファイル読込
         self.getSettings()
 
+        # 初期表示
         self.getList()
 
 
@@ -76,11 +72,8 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
         with io.open('./config.ini', 'r', encoding='utf_8_sig') as fp:
             inifile.readfp(fp)
 
-        global gDeskId
-        global gFloorId
-
-        gDeskId = inifile.get('settings', 'deskId')
-        gFloorId = inifile.get('settings', 'floorId')
+        const.DESK_ID = inifile.get('settings', 'deskId')
+        const.FLOOR_ID = inifile.get('settings', 'floorId')
 
 
     #----------------------------------------------
@@ -97,15 +90,13 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     def updateIcon(self):
 
         global gDeskStatusList
-        global gDeskId
-        global gFloorId
 
         # 人物情報を取得
         result = MyFaceApi.getPersonInfo()
 
         # 更新情報を初期化
-        deskId = gDeskId        # 設定ファイルの値
-        floorId = gFloorId      # 設定ファイルの値
+        deskId = const.DESK_ID        # 設定ファイルの値
+        floorId = const.FLOOR_ID      # 設定ファイルの値
         userId = ''
         userName = ''
         statusCd = ''
@@ -117,8 +108,9 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
             deskInfo = gDeskStatusList[deskId]
             userId = deskInfo['user_id']
             userName = deskInfo['user_name']
-            if len(userId)>0:
-                statusCd = '4'
+            if not userId == None:
+                if len(userId)>0:
+                    statusCd = '4'
         else:
             #　誰か座っている
             personInfo = result[0]
@@ -138,9 +130,7 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def getList(self):
 
-        global gFloorId
-
-        deskStatusTable = MyCosmosDB.getDeskStatusTable(gFloorId)
+        deskStatusTable = MyCosmosDB.getDeskStatusTable(const.FLOOR_ID)
         statusIconList = {'1':'icon\icon_image_01.png', '2':'icon\icon_image_02.png', '3':'icon\icon_image_03.png', '4':'icon\icon_image_04.png'}
 
         global gDeskStatusList
@@ -182,16 +172,13 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def _on_destroyed():
 
-        global gDeskId
-        global gFloorId
-
         # 更新情報を初期化
         userId = ''
         userName = ''
         statusCd = ''
 
         # DB情報を更新
-        MyCosmosDB.updateDeskStatus(gDeskId, gFloorId, userId, userName, statusCd)
+        MyCosmosDB.updateDeskStatus(const.DESK_ID, const.FLOOR_ID, userId, userName, statusCd)
 
 
 if __name__ == '__main__':
