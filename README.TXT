@@ -14,14 +14,15 @@ azure                 pip install azure
 azure-cosmosdb-table  pip install azure-cosmosdb-table
 
 ◆主に使用するファイル
-MyForm.py       メインのファイルです。これを実行すると動きます。（コマンド　python MyForm.py）
-Sample.ui       メインウィンドウのデザイナファイルです。（Qt Creatorで作成）
-Sample.py       メインウィンドウのpyファイルです。上記デザイナファイルを更新したら，uiファイルをpyファイルに変換する作業が必要になります。
-MyFaceAPI.py    FaceAPIを利用するクラスです。
-MyCosmosDB.py   DB処理を行うクラスです。AzureのCosmosDBを利用しています。
-const.py        定数定義を利用できるようにするクラスです。
-PersonalIcon.py アイコン画像の上に名前を表示できるようにQLabelクラスを拡張したクラスです。
-config.ini      デスクIDとフロアIDをこの設定ファイルから取得するようにしました。
+MyForm.py         メインのファイルです。これを実行すると動きます。（コマンド　python MyForm.py）
+Sample.ui         メインウィンドウのデザイナファイルです。（Qt Creatorで作成）
+Sample.py         メインウィンドウのpyファイルです。上記デザイナファイルを更新したら，uiファイルをpyファイルに変換する作業が必要になります。
+MyFaceAPI.py      FaceAPIを利用するクラスです。
+MyCosmosDB.py     DB処理を行うクラスです。AzureのCosmosDBを利用しています。
+const.py          定数定義を利用できるようにするクラスです。
+PersonalIcon.py   アイコン画像の上に名前を表示できるようにQLabelクラスを拡張したクラスです。
+MySearchDialog.py 検索ダイアログボックスのクラスです。
+config.ini        デスクIDとフロアIDをこの設定ファイルから取得するようにしました。
 
 ◆その他
 ・実行前に、MyForm.pyと同階層に「image」という名前のフォルダを作成してください。カメラから取得した画像の一時保存場所なのですが，バグで先にフォルダを作っておかないと動きません。（後で直しておきます・・・）
