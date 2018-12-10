@@ -93,12 +93,16 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.action_update = QtWidgets.QAction(MainWindow)
         self.action_update.setObjectName("action_update")
+        self.action_search = QtWidgets.QAction(MainWindow)
+        self.action_search.setObjectName("action_search")
         self.file_menu.addAction(self.action_update)
+        self.file_menu.addAction(self.action_search)
         self.menubar.addAction(self.file_menu.menuAction())
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
         self.action_update.triggered.connect(MainWindow.updateScr)
+        self.action_search.triggered.connect(MainWindow.search)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -107,4 +111,5 @@ class Ui_MainWindow(object):
         self.file_menu.setTitle(_translate("MainWindow", "メニュー"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.action_update.setText(_translate("MainWindow", "更新"))
+        self.action_search.setText(_translate("MainWindow", "検索"))
 

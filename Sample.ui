@@ -183,6 +183,7 @@
      <string>メニュー</string>
     </property>
     <addaction name="action_update"/>
+    <addaction name="action_search"/>
    </widget>
    <addaction name="file_menu"/>
   </widget>
@@ -209,6 +210,11 @@
     <string>更新</string>
    </property>
   </action>
+  <action name="action_search">
+   <property name="text">
+    <string>検索</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -228,9 +234,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_search</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>updateScr()</slot>
   <slot>beforeClose()</slot>
+  <slot>search()</slot>
  </slots>
 </ui>

@@ -12,6 +12,7 @@ from PyQt5 import QtCore
 from PersonalIcon import PersonalIcon
 from MyFaceApi import *
 from MyCosmosDB import *
+from MySearchDialog import *
 import json
 import io
 import configparser
@@ -58,8 +59,8 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
         # 設定ファイル読込
         self.getSettings()
 
-        # 初期表示
-        self.getList()
+        # オフィス初期表示
+        self.getMainList()
 
 
     #----------------------------------------------
@@ -73,6 +74,23 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
 
         const.DESK_ID = inifile.get('settings', 'deskId')
         const.FLOOR_ID = inifile.get('settings', 'floorId')
+
+
+    #----------------------------------------------
+    # （イベント）検索ボタン
+    #----------------------------------------------
+    def search(self):
+
+        global gDeskStatusList
+
+        # 検索ボックス呼び出し
+        dlg = MySearchDialog(self, gDeskStatusList)
+        dlg.show()
+        dlg.exec_()
+
+        # 検索結果をもとに戻す
+        for deskInfo in gDeskStatusList.values():
+            deskInfo['icon'].setOpacity(1.0)
 
 
     #----------------------------------------------
@@ -117,17 +135,19 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
             userName = personInfo['userName']
             statusCd = '1'
 
-        # DB情報を更新
-        MyCosmosDB.updateDeskStatus(deskId, floorId, userId, userName, statusCd)
+        if not result == None:
+            # DB情報を更新
+            MyCosmosDB.updateDeskStatus(deskId, floorId, userId, userName, statusCd)
 
-        # 表示情報を更新
-        self.getList()
+        # オフィスの表示情報を更新
+        self.getMainList()
+        self.ui.statusbar.showMessage('更新しました。', 3000)
 
 
     #----------------------------------------------
-    # （内部処理）リスト取得
+    # （内部処理）オフィス情報取得
     #----------------------------------------------
-    def getList(self):
+    def getMainList(self):
 
         deskStatusTable = MyCosmosDB.getDeskStatusTable(const.FLOOR_ID)
         statusIconList = {'1':'icon\icon_image_01.png', '2':'icon\icon_image_02.png', '3':'icon\icon_image_03.png', '4':'icon\icon_image_04.png'}

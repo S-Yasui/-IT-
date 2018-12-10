@@ -4,8 +4,8 @@ from PyQt5 import QtCore as Qc, QtGui as Qg, QtWidgets as Qw    #（補足1）
 from PyQt5.QtCore import Qt
 import myicon
 
-from PyQt5.QtWidgets import QApplication, QLabel
-from PyQt5.QtGui import QIcon, QPixmap, QImage
+from PyQt5.QtWidgets import QApplication, QLabel, QGraphicsOpacityEffect
+from PyQt5.QtGui import QIcon, QPixmap, QImage, QPainter
 
 class PersonalIcon(Qw.QWidget):
 
@@ -18,19 +18,33 @@ class PersonalIcon(Qw.QWidget):
         self.ui = myicon.Ui_Form()
         self.ui.setupUi(self)
 
-        pixmap = QPixmap(image)
-        self.ui.imgField.setPixmap(pixmap.scaled(imgSize, imgSize, aspectRatioMode=Qt.KeepAspectRatio))
-        self.ui.textField.setText(text)
+        self.setImage(image, imgSize)
+        self.setText(text)
+
 
     #----------------------------------------------
     # （内部処理）画像設定
     #----------------------------------------------
     def setImage(self, image, imgSize):
-         pixmap = QPixmap(image)
-         self.ui.imgField.setPixmap(pixmap.scaled(imgSize, imgSize, aspectRatioMode=Qt.KeepAspectRatio))
+
+        if not image == None:
+             pixmap = QPixmap(image)
+             self.ui.imgField.setPixmap(pixmap.scaled(imgSize, imgSize, aspectRatioMode=Qt.KeepAspectRatio))
+
 
     #----------------------------------------------
     # （内部処理）テキスト設定
     #----------------------------------------------
     def setText(self, text):
-        self.ui.textField.setText(text)
+
+        if not text == None:
+            self.ui.textField.setText(text)
+
+
+    #----------------------------------------------
+    # （内部処理）透過設定
+    #----------------------------------------------
+    def setOpacity(self, value):
+        opacityEffect = QGraphicsOpacityEffect()
+        opacityEffect.setOpacity(value)
+        self.setGraphicsEffect(opacityEffect)
