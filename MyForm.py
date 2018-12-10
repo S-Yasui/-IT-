@@ -135,9 +135,8 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
             userName = personInfo['userName']
             statusCd = '1'
 
-        if not result == None:
-            # DB情報を更新
-            MyCosmosDB.updateDeskStatus(deskId, floorId, userId, userName, statusCd)
+        # DB情報を更新
+        MyCosmosDB.updateDeskStatus(deskId, floorId, userId, userName, statusCd)
 
         # オフィスの表示情報を更新
         self.getMainList()
