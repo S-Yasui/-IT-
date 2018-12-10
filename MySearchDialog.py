@@ -130,3 +130,4 @@ class MySearchDialog(Qw.QDialog):               #QDialog
     def resetSearchIndex(self):
         global srcIndex
         srcIndex = -1
+
