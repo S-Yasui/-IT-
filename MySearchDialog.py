@@ -21,20 +21,22 @@ class MySearchDialog(Qw.QDialog):               #QDialog
 
     # クラス変数
     srcIndex = -1
+    srcList = {}
 
     #----------------------------------------------
     # （内部処理）初期化処理
     #----------------------------------------------
-    def __init__(self, parent=None, srcList=None):        #クラスの初期化
+    def __init__(self, parent=None, list=None):        #クラスの初期化
 
         super().__init__(parent)            #上位クラスの初期化ルーチンを呼び出す（補足2）
         self.ui = mysrcdialog.Ui_Dialog()   #先ほど作ったhello.pyの中にあるクラスの
         self.ui.setupUi(self)               #このコマンドを実行する
-        const.srcList = srcList
 
         # クラス変数初期化
         global srcIndex
         srcIndex = -1
+        global srcList
+        srcList = list
 
 
     #----------------------------------------------
@@ -42,24 +44,27 @@ class MySearchDialog(Qw.QDialog):               #QDialog
     #----------------------------------------------
     def search(self):
 
+        global srcList
+
+        # 検索文字列
         srcText = self.ui.srcText.text()
 
         if len(srcText)==0:
             user32.MessageBoxW(0, '検索文字列を入力してください。', u'WARNING', 0x00000030)
             return
 
-        for deskInfo in const.srcList.values():
+        for deskInfo in srcList.values():
             deskInfo['icon'].setOpacity(0.3)
 
         global srcIndex
         # 最後まで検索されていた場合は先頭から
-        if srcIndex >= len(const.srcList)-1:
+        if srcIndex >= len(srcList)-1:
             srcIndex = -1
 
         # 最後にヒットしたインデックスを保存
         lastHitIndex = srcIndex
 
-        for ind, deskInfo in enumerate(const.srcList.values()):
+        for ind, deskInfo in enumerate(srcList.values()):
 
             srcIndex = ind
 
@@ -75,7 +80,7 @@ class MySearchDialog(Qw.QDialog):               #QDialog
 
         # 見つからない場合，先頭から再検索
         if lastHitIndex > -1:
-            for ind, deskInfo in enumerate(const.srcList.values()):
+            for ind, deskInfo in enumerate(srcList.values()):
                 srcIndex = ind
                 userName = deskInfo['user_name']
                 if not userName == None:
@@ -91,6 +96,8 @@ class MySearchDialog(Qw.QDialog):               #QDialog
     #----------------------------------------------
     def searchAll(self):
 
+        global srcList
+
         # 検索文字列
         srcText = self.ui.srcText.text()
 
@@ -99,7 +106,7 @@ class MySearchDialog(Qw.QDialog):               #QDialog
             return
 
         hitFlg = False
-        for deskInfo in const.srcList.values():
+        for deskInfo in srcList.values():
 
             # ユーザ情報を取得
             userName = deskInfo['user_name']
