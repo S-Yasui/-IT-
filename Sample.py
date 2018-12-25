@@ -103,6 +103,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.action_update.triggered.connect(MainWindow.updateScr)
         self.action_search.triggered.connect(MainWindow.search)
+        self.file_menu.aboutToShow.connect(MainWindow.aboutToShowMenu)
+        self.file_menu.aboutToHide.connect(MainWindow.aboutToHideMenu)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

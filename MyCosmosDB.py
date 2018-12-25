@@ -20,7 +20,7 @@ class MyCosmosDB:
     #----------------------------------------------
     # （内部処理）座席情報取得
     #----------------------------------------------
-    def getDeskStatusTable(floorId):
+    def getDeskStatusTable(floorId, floorId_sat):
         try:
 
             # Azure Cosmos DB への接続（接続文字列を設定）
@@ -31,7 +31,7 @@ class MyCosmosDB:
 
             result = []
             for desk in desks:
-                if desk['floorId']==floorId:
+                if desk['floorId']==floorId or desk['floorId']==floorId_sat or desk['floorId']=='999':
                     result.append(desk)
 
             return result
@@ -44,7 +44,7 @@ class MyCosmosDB:
     #----------------------------------------------
     # （内部処理）自席情報更新
     #----------------------------------------------
-    def updateDeskStatus(deskId, floorId, userId, userName, statusCd):
+    def updateDeskStatus(deskId, userId, userName, statusCd):
         try:
 
             # Azure Cosmos DB への接続（接続文字列を設定）
@@ -54,7 +54,6 @@ class MyCosmosDB:
             entity = Entity()
             entity.PartitionKey = 'deskId'
             entity.RowKey = deskId
-            entity.floorId = floorId
             entity.userId = userId
             entity.userName = userName
             entity.statusCd = statusCd

@@ -33,11 +33,17 @@ class MyFaceApi:
             CF.Key.set(const.API_KEY)
             CF.BaseUrl.set(const.BASE_URL)
 
+            # 画像ファイルの存在確認
+            if not os.path.exists(image_file_path):
+                user32.MessageBoxW(0, '写真が存在しません。：{0}'.format(image_file_path), u'ERROR', 0x00000010)
+                return None
+
             # リクエスト送信
             result = CF.face.detect(image_file_path)
             faceIds = []
-            for face in result:
-                faceIds.append(face['faceId'])
+            if len(result) > 0:
+                for face in result:
+                    faceIds.append(face['faceId'])
 
             return faceIds
 

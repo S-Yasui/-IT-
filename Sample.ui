@@ -250,10 +250,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>file_menu</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>aboutToShowMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_menu</sender>
+   <signal>aboutToHide()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>aboutToHideMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>updateScr()</slot>
   <slot>beforeClose()</slot>
   <slot>search()</slot>
+  <slot>aboutToShowMenu()</slot>
+  <slot>aboutToHideMenu()</slot>
  </slots>
 </ui>

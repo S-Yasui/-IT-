@@ -51,8 +51,14 @@
      <height>23</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
    <property name="text">
     <string>すべて検索</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="srcButton">
@@ -77,8 +83,14 @@
      <height>23</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::WheelFocus</enum>
+   </property>
    <property name="text">
     <string>キャンセル</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>
@@ -129,22 +141,6 @@
     <hint type="destinationlabel">
      <x>346</x>
      <y>124</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>srcText</sender>
-   <signal>returnPressed()</signal>
-   <receiver>Dialog</receiver>
-   <slot>search()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>335</x>
-     <y>36</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>532</x>
-     <y>45</y>
     </hint>
    </hints>
   </connection>
