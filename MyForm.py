@@ -23,16 +23,17 @@ import time
 import threading
 from datetime import datetime
 
-
 import Sample as Sample               #デザイナーで作った画面をインポートする
-
 
 class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindowのサブクラス作成
 
     # クラス変数
     gDeskStatusList = {}        # 座席状態リスト
     gIsSpeakingFlg = False      # 話し中フラグ
-    gScrLock = threading.Lock()    # 画面ロック
+    gScrLock = threading.Lock()  # 画面ロック
+    
+    # 自動更新用シグナル
+    signalForUpdateIcon = Qc.pyqtSignal()
 
     #----------------------------------------------
     # （内部処理）初期化処理
@@ -238,11 +239,14 @@ class MyForm(Qw.QMainWindow):               #MyFormという名前でQMainWindow
     #----------------------------------------------
     def autoUpdateScr(self):
 
-        # 更新処理を1分毎に呼び出し
+        # 画面更新メソッドをスロットとして自作シグナルに接続
+        self.signalForUpdateIcon.connect(self.updateIcon)
+
+        # 1分毎にシグナルを発生させる
         while True:
 
-            self.updateIcon()
-            time.sleep(60)
+            self.signalForUpdateIcon.emit()
+            time.sleep(15)
 
 
     #----------------------------------------------
@@ -317,12 +321,12 @@ if __name__ == '__main__':
 
     app = Qw.QApplication(sys.argv)         #パラメータは正しくはコマンドライン引数を与える
     wmain = MyForm()                        #MyFormのインスタンスを作って
-    wmain.show()                            #表示する
+    #wmain.show()                            #表示する
 
     #　1分毎に自動更新するよう，マルチスレッドで処理
     # （自動更新を停止させる場合，以下をコメントアウトしてwmain.show()を復活させる）
     # （自動更新を復活させる場合，以下を復活させてwmain.show()をコメントアウトする）
-    '''
+    
     thread_1 = threading.Thread(target=wmain.show())
     thread_1.start()
     thread_2 = threading.Thread(target=wmain.autoUpdateScr)
@@ -330,7 +334,6 @@ if __name__ == '__main__':
     thread_2.setDaemon(True)    # 無限ループ処理のためデーモンスレッドに設定
     thread_3.setDaemon(True)    # 無限ループ処理のためデーモンスレッドに設定
     thread_2.start()
-    thread_3.start()
-    '''
+    thread_3.start() 
 
     sys.exit(app.exec())                    #こうやって終了コードを渡して抜けるのが礼儀

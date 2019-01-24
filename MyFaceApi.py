@@ -162,6 +162,7 @@ class MyFaceApi:
         # Webカメラの接続確認
         if capture.isOpened() == False:
             msg = 'Webカメラに接続されていません。'
+            capture.release()
             return picFileName, msg
 
         tryCount = 0
